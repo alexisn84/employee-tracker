@@ -44,7 +44,7 @@ function firstPrompt() {
                     viewEmployees();
                     break;
                 case "View Employees by Department":
-                    viewEmployeeByDepartment();
+                    viewEmployeesDepartment();
                     break;
                 case "Add Employee":
                     addEmployee();
@@ -67,6 +67,8 @@ function firstPrompt() {
             }
         });
 }
+
+//functions for each task listed
 
 //view all employees
 function viewEmployees() {
@@ -94,6 +96,61 @@ function viewEmployees() {
     });
 }
 
+//view employees by department
+function viewEmployeesDepartment() {
+    let query =
+    `SELECT 
+        department.id, 
+        department.name, 
+        role.salary
+    FROM employee
+    LEFT JOIN role 
+        ON employee.role_id = role.id
+    LEFT JOIN department
+        ON department.id = role.department_id
+    GROUP BY department.id, department.name, role.salary`;
+
+    db.query(query,(err, res)=>{
+        if (err) throw err;
+        const deptChoices = res.map((choices) => ({
+            value: choices.id, name: choices.name
+        }));
+        console.table(res);
+        getDept(deptChoices);
+    });
+}
+
+//get departments for show employees by dept.
+function getDept(deptChoices) {
+    inquirer
+        .prompt([
+            {
+                type: 'list',
+                name: 'department',
+                message: 'Departments: ',
+                choices: deptChoices
+            }
+        ]).then((res)=>{ 
+        let query = `SELECT 
+                        employee.id, 
+                        employee.first_name, 
+                        employee.last_name, 
+                        role.title, 
+                        department.name
+                    FROM employee
+                    JOIN role
+                        ON employee.role_id = role.id
+                    JOIN department
+                        ON department.id = role.department_id
+                    WHERE department.id = ?`
+
+        db.query(query, res.department,(err, res)=>{
+            if(err)throw err;
+            firstPrompt();
+            console.table(res);
+        });
+    })
+}
 
 //default response for other (Not Found) requests
 app.use((req, res) => {
