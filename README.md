@@ -13,6 +13,9 @@
 ## Description
 
 ## Images
+Click [here]() to watch demo video!
+<img src="https://github.com/alexisn84/employee-tracker/blob/main/assets/images/mysql%20table.jpg">
+<img src ="https://github.com/alexisn84/employee-tracker/blob/main/assets/images/allemployees.jpg">
 
 ## Credits
 
